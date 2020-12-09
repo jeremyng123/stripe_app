@@ -1,15 +1,9 @@
 import React, { useState, useMemo } from "react";
 import { useHistory, Redirect, Link } from "react-router-dom";
 import { Form, Modal, Button } from "react-bootstrap";
-import useResponsiveFontSize from "./UseResponsiveFontSize";
+import useResponsiveFontSize from "../UseResponsiveFontSize";
 
-import {
-  CardElement,
-  useElements,
-  useStripe,
-  Elements,
-} from "@stripe/react-stripe-js";
-import Field from "./Field";
+import Field from "../Field";
 
 const axios = require("axios");
 
@@ -39,12 +33,6 @@ const useOptions = () => {
   return options;
 };
 
-//scredit card button sub component
-const CardField = ({onChange, options}) => (
-  <div className="FormRow">
-    <CardElement options={options} onChange={onChange} />
-  </div>
-);
 
 //submit button sub component
 const SubmitButton = ({ processing, error, children, disabled }) => (
@@ -57,6 +45,14 @@ const SubmitButton = ({ processing, error, children, disabled }) => (
     </button>
 );
 
+const DEFAULT_USER_FIELD = {
+  name: '',
+  email: '',
+  phoneNumber: '',
+  password: '',
+  password2: ''
+};
+
 //component declaration
 export default function CreditCardForm(props) {
 
@@ -68,18 +64,8 @@ export default function CreditCardForm(props) {
     const elements = useElements();
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false)
-    const [cardComplete, setCardComplete] = useState(false);
     const [processing, setProcessing] = useState(false);
-    const [paymentMethod, setPaymentMethod] = useState('');
-    const [price, setPrice] = useState(0);
-    const [billingDetails, setBillingDetails] = useState({
-        email: '',
-        name: '',
-        address: {    
-            line1: '',
-            line2: '',
-        }
-    });
+    const [userDetails, setUserDetails] = useState(DEFAULT_USER_FIELD);
 
     //resets state on completion
     const reset = () => {
@@ -89,14 +75,7 @@ export default function CreditCardForm(props) {
         setPrice(0);
         setSuccess(false);
         setCardComplete(false);
-        setBillingDetails({
-        email: '',
-        name: '',
-        address: {
-            line1: '',
-            line2: ''
-        }
-        });
+        setUserDetails(DEFAULT_USER_FIELD);
     };
 
     /*
@@ -155,7 +134,7 @@ export default function CreditCardForm(props) {
 		//STEP 2:
         //create a new payment request and get irs client secret + id from the server
         const intentData = await axios
-            .post(process.env.REACT_APP_STRIPE_URL + "/stripe", {
+            .post(process.env.REACT_APP_BACKEND_URL + "/stripe", {
                 //include the bet amount
                 price: price,
             })
@@ -190,7 +169,7 @@ export default function CreditCardForm(props) {
         // The payment has been processed! send a confirmation to the server
         if (result.paymentIntent.status === "succeeded") {
             const confirmedPayment = await axios
-                .post(REACT_APP_STRIPE_URL + "/confirm-payment", {
+                .post(REACT_APP_BACKEND_URL + "/confirm-payment", {
                     //include id of payment
                     payment_id: intentData.id,
                     payment_type: "stripe",

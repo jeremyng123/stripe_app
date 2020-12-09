@@ -7,9 +7,7 @@ import "./css/widgetContainer.css";
 import "./css/elements.css";
 import useResponsiveFontSize from "./UseResponsiveFontSize";
 
-import { Elements } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
-import CreditCardForm from "./forms/CreditCardForm";
+import RegisterAccount from "./forms/RegisterAccount";
 
 const useOptions = () => {
   const fontSize = useResponsiveFontSize();
@@ -36,17 +34,8 @@ const useOptions = () => {
   return options;
 };
 
-//config of fonts for the stripe prebuilt elements
-const ELEMENTS_OPTIONS = {
-  fonts: [
-      {
-          cssSrc: "https://fonts.googleapis.com/css?family=Roboto",
-      },
-  ],
-};
-
 //component
-function PaymentComponent(props) {
+function RegisterAccountComponent(props) {
   //history object for redirects
   let history = useHistory();
   const options = useOptions();
@@ -74,27 +63,17 @@ function PaymentComponent(props) {
 
       {/* body */}
       <Card.Body>
-        {/* Elements Wrapper and checkout form component */}
-        <Elements
-          stripe={loadStripe(props.public_key)}
-          options={options}
-        >
-          <CreditCardForm />
-        </Elements>
+        <RegisterAccount />
       </Card.Body>
     </Card>
   );
 }
 
-function PaymentPage(props) {
+export default function RegistrationPage(props) {
   return (
     /* Payments renders a blank screen containing our payments component */
     <Container>
-      <PaymentComponent
-        public_key={ props.public_key }
-      />
+      <RegisterAccountComponent />
     </Container>
   );
 }
-
-export default PaymentPage;

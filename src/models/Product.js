@@ -14,4 +14,4 @@ const Product = new Schema({
   }
 })
 
-module.exports('Product', Product);
+module.exports(Product);
